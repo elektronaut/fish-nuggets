@@ -1,0 +1,16 @@
+#!/usr/bin/env ruby
+require 'rubygems'
+
+file_ending = /\.(aiff?|wav)$/
+
+files = ARGV.select{ |f| File.exist?(f) && f =~ file_ending }
+files.each do |file|
+    mp3file = file.gsub(file_ending, ".mp3")
+    puts "-----------------------------------------------------------------------------------------"
+    puts "Converting #{files.index(file)+1}/#{files.length}: #{File.basename(file)}...\n\n"
+    if File.exists?(mp3file)
+        puts "ERROR: File exists! #{mp3file}"
+        exit
+    end
+    `lame -V 0 --nohist "#{file}" "#{mp3file}"`
+end
