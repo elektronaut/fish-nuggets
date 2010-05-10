@@ -1,5 +1,5 @@
-function __git_branch_list  
-  git branch | sed -e "s/[^a-zZ-Z_-]*//g"
+function __git_branch_list
+  git for-each-ref | grep refs/heads | sed -e 's/^.*refs\/heads\///g'
 end
 
 #
@@ -22,14 +22,17 @@ complete -c git -n '__fish_use_subcommand' -x -a bisect --description 'Find the 
 complete -c git -n '__fish_use_subcommand' -x -a branch --description 'List, create, or delete branches'
 complete -c git -n '__fish_use_subcommand' -x -a checkout --description 'Checkout and switch to a branch'
 complete -c git -n '__fish_use_subcommand' -x -a clone --description 'Clone a repository into a new directory'
+complete -c git -n '__fish_use_subcommand' -x -a close --description 'Deletes a branch by name (or the current branch)'
 complete -c git -n '__fish_use_subcommand' -x -a commit --description 'Record changes to the repository'
 complete -c git -n '__fish_use_subcommand' -x -a diff --description 'Show changes between commits, commit and working tree, etc'
 complete -c git -n '__fish_use_subcommand' -x -a fetch --description 'Download objects and refs from another repository'
 complete -c git -n '__fish_use_subcommand' -x -a grep --description 'Print lines matching a pattern'
+complete -c git -n '__fish_use_subcommand' -x -a help --description 'Display help information about git'
 complete -c git -n '__fish_use_subcommand' -x -a init --description 'Create an empty git repository or reinitialize an existing one'
 complete -c git -n '__fish_use_subcommand' -x -a log --description 'Show commit logs'
 complete -c git -n '__fish_use_subcommand' -x -a merge --description 'Join two or more development histories together'
 complete -c git -n '__fish_use_subcommand' -x -a mv --description 'Move or rename a file, a directory, or a symlink'
+complete -c git -n '__fish_use_subcommand' -x -a open --description 'Create or switch to the named branch'
 complete -c git -n '__fish_use_subcommand' -x -a pull --description 'Fetch from and merge with another repository or a local branch'
 complete -c git -n '__fish_use_subcommand' -x -a push --description 'Update remote refs along with associated objects'
 complete -c git -n '__fish_use_subcommand' -x -a rebase --description 'Forward-port local commits to the updated upstream head'
@@ -39,6 +42,7 @@ complete -c git -n '__fish_use_subcommand' -x -a show --description 'Show variou
 complete -c git -n '__fish_use_subcommand' -x -a status --description 'Show the working tree status'
 complete -c git -n '__fish_use_subcommand' -x -a tag --description 'Create, list, delete or verify a tag object signed with GPG'
 complete -c git -n '__fish_use_subcommand' -x -a cherry-pick --description 'Cherry-pick from another branch'
+complete -c git -n '__fish_use_subcommand' -x -a gc --description 'Cleanup unnecessary files and optimize the local repository'
 
 
 
@@ -73,6 +77,9 @@ complete -c git -n 'contains \'checkout\' (commandline -poc)' -a '(__git_branch_
 complete -c git -n 'contains \'checkout\' (commandline -poc)' -l track -x --description '--no-track options, which will be passed to git branch'
 complete -c git -n 'contains \'checkout\' (commandline -poc)' -l no-track -x --description 'Given'
 complete -c git -n 'contains \'checkout\' (commandline -poc)' -l hard -x --description 'To further move around, for example. You'
+complete -c git -n 'contains \'checkout\' (commandline -poc)' -s q -x --description 'Suppress feedback messages'
+complete -c git -n 'contains \'checkout\' (commandline -poc)' -s b -x --description '<branch name>'
+complete -c git -n 'contains \'checkout\' (commandline -poc)' -s f -x --description 'Throw away local changes'
 
 
 #
@@ -91,6 +98,10 @@ complete -c git -n 'contains \'clone\' (commandline -poc)' -l depth --descriptio
 #
 
 complete -c git -n 'contains \'commit\' (commandline -poc)' -l author --description '<author>'
+complete -c git -n 'contains \'commit\' (commandline -poc)' -s a -l all --description 'Include all changes to working directory'
+complete -c git -n 'contains \'commit\' (commandline -poc)' -s v -l verbose --description 'View changes in the commit message'
+complete -c git -n 'contains \'commit\' (commandline -poc)' -l amend --description 'Ammend last commit with staged changes'
+complete -c git -n 'contains \'commit\' (commandline -poc)' -s m -l message --description '<commit message>'
 
 
 #
@@ -239,5 +250,19 @@ complete -c git -n 'contains \'rm\' (commandline -poc)' -l cached -x --descripti
 #
 
 
+#
+# Completions for the 'gc' subcommand
+#
+
+complete -c git -n 'contains \'gc\' (commandline -poc)' -l aggressive -x --description 'Aggressively optimize the repository at the expense of taking much more time'
+complete -c git -n 'contains \'gc\' (commandline -poc)' -l auto -x --description 'Checks whether any housekeeping is required; if not, it exits without performing any work'
+complete -c git -n 'contains \'gc\' (commandline -poc)' -l quiet -x --description 'Suppress all progress reports'
 
 
+
+#
+# Completions for my custom git scripts
+#
+complete -x -c git -n 'contains \'open\' (commandline -poc)' -a '(__git_branch_list)' --description "Git branch"
+complete -x -c git -n 'contains \'close\' (commandline -poc)' -a '(__git_branch_list)' --description "Git branch"
+complete -x -c git -n 'contains \'close\' (commandline -poc)' -s D -l force -x --description "Discard any commits not in the tracking branch"
